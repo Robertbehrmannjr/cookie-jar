@@ -18,4 +18,7 @@ export const MIN_TIP_COOK = 0.001
 // Cookie Chain is SVM-compatible and uses the same lamport denomination as
 // Solana, just for its own native gas token, COOK (not SOL).
 export const LAMPORTS_PER_COOK = 1_000_000_000
-export const FEED_POLL_MS = 8000
+// Cookie Chain advertises sub-second finality, so poll aggressively for a
+// near-instant feel; a manual refresh() is also triggered right after a tip
+// confirms instead of waiting for the next tick.
+export const FEED_POLL_MS = 1500

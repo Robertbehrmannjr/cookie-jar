@@ -10,7 +10,7 @@ import './App.css'
 
 function Dashboard() {
   const { connection } = useConnection()
-  const { tips, jarBalance, loading } = useJarActivity(connection)
+  const { tips, jarBalance, loading, refresh } = useJarActivity(connection)
 
   return (
     <div className="app-shell">
@@ -18,7 +18,7 @@ function Dashboard() {
 
       <main className="layout">
         <div className="layout-left">
-          <TipJar />
+          <TipJar onConfirmed={refresh} />
           <div className="jar-address card">
             <span className="muted">Community jar address</span>
             <code>{COOKIE_JAR_ADDRESS}</code>

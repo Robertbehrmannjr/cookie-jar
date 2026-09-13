@@ -15,7 +15,7 @@ type Status =
   | { kind: 'success'; signature: string; fortune: string }
   | { kind: 'error'; message: string }
 
-export function TipJar() {
+export function TipJar({ onConfirmed }: { onConfirmed?: () => void }) {
   const { connection } = useConnection()
   const { publicKey, sendTransaction, connected } = useWallet()
   const [amount, setAmount] = useState('0.01')
@@ -60,6 +60,9 @@ export function TipJar() {
 
       setStatus({ kind: 'success', signature, fortune: fortuneFromSignature(signature) })
       setMemo('')
+      onConfirmed?.()
+      // getSignaturesForAddress can lag confirmTransaction by a beat; catch up shortly after.
+      setTimeout(() => onConfirmed?.(), 2000)
     } catch (err) {
       setStatus({
         kind: 'error',

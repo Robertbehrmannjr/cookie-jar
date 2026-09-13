@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { PublicKey, type Connection } from '@solana/web3.js'
 import { COOKIE_JAR_ADDRESS, FEED_POLL_MS, LAMPORTS_PER_COOK } from './constants'
 
@@ -42,6 +42,7 @@ export function useJarActivity(connection: Connection) {
   const [jarBalance, setJarBalance] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const knownSignatures = useRef(new Set<string>())
+  const pollRef = useRef<() => Promise<void>>(async () => {})
 
   useEffect(() => {
     let cancelled = false
@@ -91,6 +92,7 @@ export function useJarActivity(connection: Connection) {
       }
     }
 
+    pollRef.current = poll
     poll()
     const id = setInterval(poll, FEED_POLL_MS)
     return () => {
@@ -99,5 +101,7 @@ export function useJarActivity(connection: Connection) {
     }
   }, [connection])
 
-  return { tips, jarBalance, loading }
+  const refresh = useCallback(() => pollRef.current(), [])
+
+  return { tips, jarBalance, loading, refresh }
 }

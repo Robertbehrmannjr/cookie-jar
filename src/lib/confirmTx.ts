@@ -10,7 +10,7 @@ import type { Connection } from '@solana/web3.js'
 export async function confirmBySignaturePolling(
   connection: Connection,
   signature: string,
-  { timeoutMs = 60_000, intervalMs = 1500 } = {},
+  { timeoutMs = 60_000, intervalMs = 500 } = {},
 ): Promise<void> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {

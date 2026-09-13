@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js'
 import { COOKIE_JAR_ADDRESS, LAMPORTS_PER_COOK, MIN_TIP_COOK } from '../lib/constants'
-import { fortuneFromSignature } from '../lib/fortunes'
+import { fortuneFromSignature, type Fortune } from '../lib/fortunes'
 import { confirmBySignaturePolling } from '../lib/confirmTx'
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr')
@@ -12,7 +12,7 @@ type Status =
   | { kind: 'building' }
   | { kind: 'awaiting-signature' }
   | { kind: 'confirming'; signature: string }
-  | { kind: 'success'; signature: string; fortune: string }
+  | { kind: 'success'; signature: string; fortune: Fortune }
   | { kind: 'error'; message: string }
 
 export function TipJar({ onConfirmed }: { onConfirmed?: () => void }) {
@@ -132,9 +132,16 @@ function StatusBanner({ status }: { status: Status }) {
 
   if (status.kind === 'success') {
     return (
-      <div className="status-banner status-success">
-        <strong>Tip confirmed! 🎉</strong>
-        <p className="fortune">"{status.fortune}"</p>
+      <div className={`status-banner status-success rarity-${status.fortune.rarity}`}>
+        <strong>
+          Tip confirmed! 🎉{' '}
+          <span className={`rarity-badge rarity-badge-${status.fortune.rarity}`}>
+            {status.fortune.rarity === 'legendary' && '🌟 Legendary'}
+            {status.fortune.rarity === 'rare' && '✨ Rare'}
+            {status.fortune.rarity === 'common' && 'Common'}
+          </span>
+        </strong>
+        <p className="fortune">"{status.fortune.message}"</p>
         <a
           href={`https://cookiescan.io/tx/${status.signature}`}
           target="_blank"

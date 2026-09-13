@@ -1,4 +1,11 @@
-const FORTUNES = [
+export type FortuneRarity = 'common' | 'rare' | 'legendary'
+
+export interface Fortune {
+  message: string
+  rarity: FortuneRarity
+}
+
+const COMMON = [
   'A fresh block is coming your way — finality favors the bold.',
   'The jar remembers every hand that feeds it.',
   'Your next trade will be sub-second and regret-free.',
@@ -16,11 +23,37 @@ const FORTUNES = [
   'Your generosity is now immutable.',
 ]
 
-/** Deterministic fortune derived from the tx signature so it's reproducible/verifiable. */
-export function fortuneFromSignature(signature: string): string {
+const RARE = [
+  'The jar whispers your name to future tippers. Rare cookie, rare vibes.',
+  'One in five. You cracked a rare one — frame this signature.',
+  'The validators are talking about you. Good things, probably.',
+  'Rare fortune: your bags and your karma are both about to get heavier.',
+]
+
+const LEGENDARY = [
+  'LEGENDARY. This signature belongs in the CookieScan hall of fame.',
+  'You just hit the 3%. Somewhere, the community multi-sig nods in approval.',
+  "Legendary pull. Screenshot this before it's too immutable to believe.",
+]
+
+function hashOf(signature: string): number {
   let hash = 0
   for (let i = 0; i < signature.length; i++) {
     hash = (hash * 31 + signature.charCodeAt(i)) >>> 0
   }
-  return FORTUNES[hash % FORTUNES.length]
+  return hash
+}
+
+/** Deterministic fortune derived from the tx signature so it's reproducible/verifiable. */
+export function fortuneFromSignature(signature: string): Fortune {
+  const hash = hashOf(signature)
+  const roll = hash % 100
+
+  if (roll < 3) {
+    return { message: LEGENDARY[hash % LEGENDARY.length], rarity: 'legendary' }
+  }
+  if (roll < 20) {
+    return { message: RARE[hash % RARE.length], rarity: 'rare' }
+  }
+  return { message: COMMON[hash % COMMON.length], rarity: 'common' }
 }

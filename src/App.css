@@ -160,6 +160,42 @@
   margin: 6px 0;
 }
 
+.rarity-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  vertical-align: middle;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rarity-badge-common {
+  background: rgba(184, 165, 140, 0.2);
+  color: var(--text-muted);
+}
+
+.rarity-badge-rare {
+  background: rgba(71, 191, 255, 0.18);
+  color: #47bfff;
+}
+
+.rarity-badge-legendary {
+  background: linear-gradient(135deg, rgba(244, 165, 39, 0.25), rgba(232, 133, 15, 0.35));
+  color: var(--accent);
+  animation: legendary-glow 1.6s ease-in-out infinite;
+}
+
+@keyframes legendary-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(244, 165, 39, 0); }
+  50% { box-shadow: 0 0 12px rgba(244, 165, 39, 0.6); }
+}
+
+.rarity-legendary {
+  border: 1px solid rgba(244, 165, 39, 0.5);
+}
+
 .status-error {
   background: rgba(248, 113, 113, 0.12);
   color: var(--error);
@@ -247,6 +283,44 @@
   margin-top: 8px;
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+.leaderboard ol {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.leaderboard-rank {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.leaderboard-address {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.leaderboard-total {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.85rem;
 }
 
 .app-footer {

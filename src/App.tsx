@@ -4,6 +4,7 @@ import { WalletBar } from './components/WalletBar'
 import { TipJar } from './components/TipJar'
 import { ActivityFeed } from './components/ActivityFeed'
 import { Analytics } from './components/Analytics'
+import { Leaderboard } from './components/Leaderboard'
 import { useJarActivity } from './lib/useJarActivity'
 import { COOKIE_JAR_ADDRESS } from './lib/constants'
 import './App.css'
@@ -19,6 +20,7 @@ function Dashboard() {
       <main className="layout">
         <div className="layout-left">
           <TipJar onConfirmed={refresh} />
+          <Leaderboard tips={tips} />
           <div className="jar-address card">
             <span className="muted">Community jar address</span>
             <code>{COOKIE_JAR_ADDRESS}</code>

@@ -2,7 +2,7 @@
 
 A community tip jar cApp for [Cookie Chain](https://www.cookiechain.wtf), built for the *Build a cApp on Cookie Chain* challenge.
 
-Connect a wallet, drop SOL into the shared on-chain jar, attach a message, and crack open a
+Connect a wallet, drop COOK (Cookie Chain's native token) into the shared on-chain jar, attach a message, and crack open a
 deterministic on-chain "fortune cookie" the moment your transaction confirms. Every tip is
 public, streamed live from the chain (no backend/indexer), and rolled up into a small
 analytics dashboard.
@@ -61,7 +61,10 @@ cp .env.example .env
 
 This is a freshly generated Cookie Chain (SVM) keypair used purely as a receive-only public
 address for the demo jar — the app never needs or touches its private key. **Fund it with a
-small amount of testnet/devnet SOL before demoing** so `getBalance` renders a live number.
+small amount of COOK before demoing** so `getBalance` renders a live number. COOK lives on
+Solana too and moves to Cookie Chain instantly (1:1, lock/unlock) via the official Hyperlane
+bridge at [hyperlane.cookiescan.io](https://hyperlane.cookiescan.io) — bridge to the jar address
+above, or to your own wallet and then tip the jar from the app.
 
 ## How a tip flows through the app
 
@@ -79,7 +82,7 @@ small amount of testnet/devnet SOL before demoing** so `getBalance` renders a li
 The dashboard already deep-links to [CookieScan](https://cookiescan.io). Natural next
 integrations:
 
-- **Cookiebox** — swap widget so tippers without SOL can acquire it before tipping.
+- **Cookiebox** — swap widget so tippers without COOK can acquire it before tipping.
 - **Cookieswap** — quote/execute a swap directly from the "Connect a wallet first" empty state.
 - **Cookie DAS API** (`api.cookiescan.io`) — replace the client-side polling analytics with richer
   historical data once rate limits/auth are available.

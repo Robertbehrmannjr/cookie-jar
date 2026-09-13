@@ -23,7 +23,7 @@ export function ActivityFeed({ tips, loading }: { tips: JarTip[]; loading: boole
         {tips.map((tip) => (
           <li key={tip.signature} className="activity-row">
             <div className="activity-main">
-              <span className="activity-amount">+{tip.amountSol.toFixed(4)} SOL</span>
+              <span className="activity-amount">+{tip.amountCook.toFixed(4)} COOK</span>
               <span className="activity-from">from {short(tip.from)}</span>
             </div>
             {tip.memo && <p className="activity-memo">"{tip.memo}"</p>}

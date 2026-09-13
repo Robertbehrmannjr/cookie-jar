@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { PublicKey, type Connection } from '@solana/web3.js'
-import { COOKIE_JAR_ADDRESS, FEED_POLL_MS, LAMPORTS_PER_SOL } from './constants'
+import { COOKIE_JAR_ADDRESS, FEED_POLL_MS, LAMPORTS_PER_COOK } from './constants'
 
 export interface JarTip {
   signature: string
   slot: number
   blockTime: number | null
-  amountSol: number
+  amountCook: number
   from: string | null
   memo: string | null
 }
@@ -26,14 +26,14 @@ function extractMemo(tx: Awaited<ReturnType<Connection['getParsedTransaction']>>
 function extractTipAmount(
   tx: Awaited<ReturnType<Connection['getParsedTransaction']>>,
   jar: string,
-): { amountSol: number; from: string | null } {
-  if (!tx?.meta) return { amountSol: 0, from: null }
+): { amountCook: number; from: string | null } {
+  if (!tx?.meta) return { amountCook: 0, from: null }
   const keys = tx.transaction.message.accountKeys.map((k) => k.pubkey.toBase58())
   const jarIndex = keys.indexOf(jar)
-  if (jarIndex === -1) return { amountSol: 0, from: null }
-  const delta = (tx.meta.postBalances[jarIndex] - tx.meta.preBalances[jarIndex]) / LAMPORTS_PER_SOL
+  if (jarIndex === -1) return { amountCook: 0, from: null }
+  const delta = (tx.meta.postBalances[jarIndex] - tx.meta.preBalances[jarIndex]) / LAMPORTS_PER_COOK
   const from = keys.find((k) => k !== jar) ?? null
-  return { amountSol: delta, from }
+  return { amountCook: delta, from }
 }
 
 /** Polls the jar address for recent activity directly from the chain (no backend/indexer needed). */
@@ -54,7 +54,7 @@ export function useJarActivity(connection: Connection) {
           connection.getSignaturesForAddress(jar, { limit: 25 }),
         ])
         if (cancelled) return
-        setJarBalance(balanceLamports / LAMPORTS_PER_SOL)
+        setJarBalance(balanceLamports / LAMPORTS_PER_COOK)
 
         const fresh = signatures.filter((s) => !knownSignatures.current.has(s.signature))
         if (fresh.length > 0) {
@@ -65,12 +65,12 @@ export function useJarActivity(connection: Connection) {
 
           const newTips: JarTip[] = fresh.map((s, i) => {
             const tx = parsed[i]
-            const { amountSol, from } = extractTipAmount(tx, jar.toBase58())
+            const { amountCook, from } = extractTipAmount(tx, jar.toBase58())
             return {
               signature: s.signature,
               slot: s.slot,
               blockTime: s.blockTime ?? null,
-              amountSol,
+              amountCook,
               from,
               memo: extractMemo(tx),
             }
@@ -79,7 +79,7 @@ export function useJarActivity(connection: Connection) {
           fresh.forEach((s) => knownSignatures.current.add(s.signature))
           setTips((prev) =>
             [...newTips, ...prev]
-              .filter((t) => t.amountSol > 0)
+              .filter((t) => t.amountCook > 0)
               .sort((a, b) => (b.blockTime ?? 0) - (a.blockTime ?? 0))
               .slice(0, 50),
           )

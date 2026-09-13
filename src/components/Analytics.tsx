@@ -5,7 +5,7 @@ function buildVolumeSeries(tips: JarTip[]) {
   const sorted = [...tips].sort((a, b) => (a.blockTime ?? 0) - (b.blockTime ?? 0))
   let running = 0
   return sorted.map((t) => {
-    running += t.amountSol
+    running += t.amountCook
     return {
       time: t.blockTime ? new Date(t.blockTime * 1000).toLocaleTimeString() : '',
       cumulative: Number(running.toFixed(4)),
@@ -15,7 +15,7 @@ function buildVolumeSeries(tips: JarTip[]) {
 
 export function Analytics({ tips, jarBalance }: { tips: JarTip[]; jarBalance: number | null }) {
   const totalTips = tips.length
-  const totalVolume = tips.reduce((sum, t) => sum + t.amountSol, 0)
+  const totalVolume = tips.reduce((sum, t) => sum + t.amountCook, 0)
   const uniqueTippers = new Set(tips.map((t) => t.from).filter(Boolean)).size
   const series = buildVolumeSeries(tips)
 
@@ -25,7 +25,7 @@ export function Analytics({ tips, jarBalance }: { tips: JarTip[]; jarBalance: nu
       <div className="stat-grid">
         <div className="stat">
           <span className="stat-value">{jarBalance !== null ? jarBalance.toFixed(3) : '—'}</span>
-          <span className="stat-label">SOL in jar</span>
+          <span className="stat-label">COOK in jar</span>
         </div>
         <div className="stat">
           <span className="stat-value">{totalTips}</span>

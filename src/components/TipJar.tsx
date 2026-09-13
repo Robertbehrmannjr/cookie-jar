@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js'
-import { COOKIE_JAR_ADDRESS, LAMPORTS_PER_SOL, MIN_TIP_SOL } from '../lib/constants'
+import { COOKIE_JAR_ADDRESS, LAMPORTS_PER_COOK, MIN_TIP_COOK } from '../lib/constants'
 import { fortuneFromSignature } from '../lib/fortunes'
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr')
@@ -26,8 +26,8 @@ export function TipJar() {
     if (!publicKey) return
 
     const sol = Number(amount)
-    if (!Number.isFinite(sol) || sol < MIN_TIP_SOL) {
-      setStatus({ kind: 'error', message: `Tip must be at least ${MIN_TIP_SOL} SOL.` })
+    if (!Number.isFinite(sol) || sol < MIN_TIP_COOK) {
+      setStatus({ kind: 'error', message: `Tip must be at least ${MIN_TIP_COOK} COOK.` })
       return
     }
 
@@ -38,7 +38,7 @@ export function TipJar() {
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: jar,
-          lamports: Math.round(sol * LAMPORTS_PER_SOL),
+          lamports: Math.round(sol * LAMPORTS_PER_COOK),
         }),
       )
       if (memo.trim()) {
@@ -76,11 +76,11 @@ export function TipJar() {
       </p>
 
       <label className="field">
-        <span>Amount (SOL)</span>
+        <span>Amount (COOK)</span>
         <input
           type="number"
           step="0.001"
-          min={MIN_TIP_SOL}
+          min={MIN_TIP_COOK}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           disabled={!connected || status.kind === 'building' || status.kind === 'awaiting-signature'}

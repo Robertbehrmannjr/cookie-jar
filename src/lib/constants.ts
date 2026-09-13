@@ -7,6 +7,8 @@ export const COOKIE_JAR_ADDRESS =
 
 export const COOKIESCAN_API = 'https://api.cookiescan.io'
 
-export const MIN_TIP_SOL = 0.001
-export const LAMPORTS_PER_SOL = 1_000_000_000
+export const MIN_TIP_COOK = 0.001
+// Cookie Chain is SVM-compatible and uses the same lamport denomination as
+// Solana, just for its own native gas token, COOK (not SOL).
+export const LAMPORTS_PER_COOK = 1_000_000_000
 export const FEED_POLL_MS = 8000

@@ -16,8 +16,11 @@ analytics dashboard.
   instruction) sent straight to the chain's SVM runtime via `https://rpc.cookiescan.io`.
 - **Transaction lifecycle feedback** — building → awaiting signature → confirming → success/error,
   each with its own UI state.
-- **Fortune cookies** — a message deterministically derived from your transaction signature, so
-  it's reproducible and impossible to game.
+- **Fortune cookies with rarity** — a message deterministically derived from your transaction
+  signature, so it's reproducible and impossible to game. Each pull also rolls a rarity —
+  common (80%), rare (17%), legendary (3%) — with a glowing badge on the rare pulls.
+- **Top tippers leaderboard** — ranks cumulative tip volume per wallet, computed client-side from
+  the same on-chain feed already being polled.
 - **Live activity feed** — polls `getSignaturesForAddress`/`getParsedTransaction` on the jar
   address directly, no server required.
 - **Analytics dashboard** — jar balance, tip count, cumulative volume chart (via Recharts), and
@@ -71,11 +74,29 @@ above, or to your own wallet and then tip the jar from the app.
 1. User connects a wallet (`AppWalletProvider` → `@solana/wallet-adapter-react`).
 2. `TipJar` builds a `Transaction` with a `SystemProgram.transfer` to the jar address, plus an
    optional SPL Memo instruction carrying the user's message.
-3. `sendTransaction` hands it to the connected wallet for signing, the app awaits confirmation
-   via `connection.confirmTransaction`, and shows the fortune cookie on success.
-4. `useJarActivity` polls the jar address every few seconds, decodes each transaction's memo and
-   balance delta, and feeds both the `ActivityFeed` and `Analytics` components — all client-side,
-   directly against Cookie Chain's RPC.
+3. `sendTransaction` hands it to the connected wallet for signing; the app confirms by polling
+   `getSignatureStatuses` directly (see below) and shows the fortune cookie + rarity badge on
+   success.
+4. `useJarActivity` polls the jar address every 1.5s, decodes each transaction's memo and
+   balance delta, and feeds the `ActivityFeed`, `Analytics`, and `Leaderboard` components — all
+   client-side, directly against Cookie Chain's RPC. A tip also triggers an immediate refresh
+   instead of waiting for the next poll tick.
+
+### Why polling instead of `confirmTransaction`
+
+Cookie Chain's websocket endpoint (`wss.cookiescan.io`) lives on a different host than its RPC
+one (`rpc.cookiescan.io`). `@solana/web3.js` can only auto-derive a websocket URL by swapping the
+RPC URL's protocol, so it silently connects to the wrong host and the signature subscription
+`connection.confirmTransaction()` relies on never fires. `ConnectionProvider` is given the
+correct `wsEndpoint` explicitly, and confirmation itself uses a `getSignatureStatuses` polling
+loop (`src/lib/confirmTx.ts`) instead of the websocket subscription, so it works regardless.
+
+## Why a tip jar, and not a payments app
+
+A few other cApp submissions (Sprinkle, Cookie Tab) already cover payment links, invoices, and
+multi-token settlement on Cookie Chain in more depth than this app tries to. Cookie Jar leans
+into the *fun* half of the brief instead: one shared jar, a fortune cookie with rarity on every
+tip, and a leaderboard — something anyone can try end-to-end in under a minute with no setup.
 
 ## Extending with the Cookie ecosystem
 
@@ -91,9 +112,9 @@ integrations:
 
 ```
 src/
-  components/       UI: WalletBar, TipJar, ActivityFeed, Analytics
+  components/       UI: WalletBar, TipJar, ActivityFeed, Analytics, Leaderboard
   context/           AppWalletProvider (wallet-adapter wiring)
-  lib/                constants, fortunes, useJarActivity hook
+  lib/                constants, fortunes (rarity), confirmTx, useJarActivity hook
 ```
 
 ## Deployment

@@ -1,6 +1,13 @@
 export const COOKIE_CHAIN_RPC =
   import.meta.env.VITE_RPC_ENDPOINT ?? 'https://rpc.cookiescan.io'
 
+// Cookie Chain's websocket endpoint lives on a different host than the RPC
+// one (wss.cookiescan.io, not rpc.cookiescan.io) — @solana/web3.js can't
+// derive it automatically, so it must be passed explicitly or signature
+// subscriptions (used by confirmTransaction) silently never resolve.
+export const COOKIE_CHAIN_WS =
+  import.meta.env.VITE_WS_ENDPOINT ?? 'wss://wss.cookiescan.io'
+
 export const COOKIE_JAR_ADDRESS =
   import.meta.env.VITE_COOKIE_JAR_ADDRESS ??
   '5cQ5Sb6mhnqfYZUvAx6DXtb6Z4oW3FhTT3KB7ZiNwQHX'

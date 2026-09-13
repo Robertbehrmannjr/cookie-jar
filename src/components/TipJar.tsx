@@ -3,6 +3,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js'
 import { COOKIE_JAR_ADDRESS, LAMPORTS_PER_COOK, MIN_TIP_COOK } from '../lib/constants'
 import { fortuneFromSignature } from '../lib/fortunes'
+import { confirmBySignaturePolling } from '../lib/confirmTx'
 
 const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr')
 
@@ -55,8 +56,7 @@ export function TipJar() {
       const signature = await sendTransaction(tx, connection)
 
       setStatus({ kind: 'confirming', signature })
-      const latest = await connection.getLatestBlockhash()
-      await connection.confirmTransaction({ signature, ...latest }, 'confirmed')
+      await confirmBySignaturePolling(connection, signature)
 
       setStatus({ kind: 'success', signature, fortune: fortuneFromSignature(signature) })
       setMemo('')
